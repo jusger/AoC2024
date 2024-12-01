@@ -5,8 +5,8 @@ def solve_via_numpy():
     '''
     import numpy as np
     
-    with open('AoC_Day1.input','r') as infile:
-        input_data = [list(map(int, line.strip().split())) for line in infile if line != '\n']
+    with open('AoC.input','r') as infile:
+        input_data = [list(map(int, line.strip().split('|'))) for line in infile if line != '\n']
 
     input1, input2 = map(np.asarray, map(list, zip(*input_data)))
 
@@ -19,9 +19,9 @@ def solve_via_polars():
     '''
     import polars as pl
 
-    input_data = pl.read_csv('AoC_Day1.input', has_header=False, new_columns=['temp']).drop_nulls().select(pl.col('temp').str.split_exact(by='   ', n=1)).unnest('temp')
+    input_data = pl.read_csv('AoC.input', has_header=False, separator='|', new_columns=['field1', 'field2']).drop_nulls()
 
-    return input_data.with_columns((pl.col('field_0').cast(pl.Int32).sort() - pl.col('field_1').cast(pl.Int32).sort()).abs().alias('diff')).select(pl.col('diff').sum()).item()
+    return input_data.with_columns((pl.col('field1').sort() - pl.col('field2').sort()).abs().alias('diff')).select(pl.col('diff').sum()).item()
 
 if __name__ == "__main__":
     # A sort of Hamming Distance like measure between 
